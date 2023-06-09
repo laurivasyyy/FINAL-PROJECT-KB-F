@@ -19,10 +19,10 @@ FONTS = cv.FONT_ITALIC
 
 # getting class names from classes.txt file 
 class_names = []
-with open("FINAL-PROJECT-KB-F\classes.txt", "r") as f:
+with open("classes.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 #  setttng up opencv net
-yoloNet = cv.dnn.readNet('FINAL-PROJECT-KB-F\yolov4-tiny.weights', 'FINAL-PROJECT-KB-F\yolov4-tiny.cfg')
+yoloNet = cv.dnn.readNet('yolov4-tiny.weights', 'yolov4-tiny.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
@@ -66,8 +66,8 @@ def distance_finder(focal_length, real_object_width, width_in_frmae):
     return distance
 
 # reading the reference image from dir 
-ref_person = cv.imread('FINAL-PROJECT-KB-F\ReferenceImages\image1.jpg')
-ref_mobile = cv.imread('FINAL-PROJECT-KB-F\ReferenceImages\image2.jpg')
+ref_person = cv.imread('ReferenceImages\image1.jpg')
+ref_mobile = cv.imread('ReferenceImages\image2.jpg')
 
 mobile_data = object_detector(ref_mobile)
 mobile_width_in_rf = mobile_data[1][1]
