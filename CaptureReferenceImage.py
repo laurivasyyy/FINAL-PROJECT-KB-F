@@ -13,16 +13,17 @@ ORANGE = (0, 69, 255)
 fonts = cv.FONT_HERSHEY_COMPLEX
 # reading class name from text file
 class_names = []
-with open("classes.txt", "r") as f:
+with open("FINAL-PROJECT-KB-F\classes.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 #  setttng up opencv net
-yoloNet = cv.dnn.readNet('yolov4-tiny.weights', 'yolov4-tiny.cfg')
+yoloNet = cv.dnn.readNet('FINAL-PROJECT-KB-F\yolov4-tiny.weights', 'FINAL-PROJECT-KB-F\yolov4-tiny.cfg')
+
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
 
 model = cv.dnn_DetectionModel(yoloNet)
-model.setInputParams(size=(416, 416), scale=1/255, swapRB=True)
+model.setInputParams(size=(800, 800), scale=1/255, swapRB=True)
 
 # setting camera
 
@@ -63,7 +64,7 @@ while True:
     if key == ord('c'):
         capture = True
         number += 1
-        cv.imwrite(f'ReferenceImages/image{number}.png', orignal)
+        cv.imwrite(f'ReferenceImages/image{number}.jpg', orignal)
     if key == ord('q'):
         break
 cv.destroyAllWindows()

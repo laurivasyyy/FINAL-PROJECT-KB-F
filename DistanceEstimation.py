@@ -2,33 +2,33 @@ import cv2 as cv
 import numpy as np
 
 # Distance constants 
-KNOWN_DISTANCE = 45 #INCHES
-PERSON_WIDTH = 16 #INCHES
-MOBILE_WIDTH = 3.0 #INCHES
+KNOWN_DISTANCE = 0.5 #metres
+PERSON_WIDTH = 0.4 #metres
+MOBILE_WIDTH = 0.08 #metres
 
 # Object detector constant 
-CONFIDENCE_THRESHOLD = 0.4
+CONFIDENCE_THRESHOLD = 0.5
 NMS_THRESHOLD = 0.3
 
 # colors for object detected
 COLORS = [(255,0,0),(255,0,255),(0, 255, 255), (255, 255, 0), (0, 255, 0), (255, 0, 0)]
-GREEN =(0,255,0)
+PINK =(255,0,127)
 BLACK =(0,0,0)
 # defining fonts 
-FONTS = cv.FONT_HERSHEY_COMPLEX
+FONTS = cv.FONT_ITALIC
 
 # getting class names from classes.txt file 
 class_names = []
-with open("classes.txt", "r") as f:
+with open("FINAL-PROJECT-KB-F\classes.txt", "r") as f:
     class_names = [cname.strip() for cname in f.readlines()]
 #  setttng up opencv net
-yoloNet = cv.dnn.readNet('yolov4-tiny.weights', 'yolov4-tiny.cfg')
+yoloNet = cv.dnn.readNet('FINAL-PROJECT-KB-F\yolov4-tiny.weights', 'FINAL-PROJECT-KB-F\yolov4-tiny.cfg')
 
 yoloNet.setPreferableBackend(cv.dnn.DNN_BACKEND_CUDA)
 yoloNet.setPreferableTarget(cv.dnn.DNN_TARGET_CUDA_FP16)
 
 model = cv.dnn_DetectionModel(yoloNet)
-model.setInputParams(size=(416, 416), scale=1/255, swapRB=True)
+model.setInputParams(size=(800, 800), scale=1/255, swapRB=True)
 
 # object detector funciton /method
 def object_detector(image):
@@ -39,7 +39,7 @@ def object_detector(image):
         # define color of each, object based on its class id 
         color= COLORS[int(classid) % len(COLORS)]
     
-        label = "%s : %f" % (class_names[classid[0]], score)
+        label = "confidence %s : %.2f percent" % (class_names[classid], score * 100)
 
         # draw rectangle on and label on object
         cv.rectangle(image, box, color, 2)
@@ -48,9 +48,9 @@ def object_detector(image):
         # getting the data 
         # 1: class name  2: object width in pixels, 3: position where have to draw text(distance)
         if classid ==0: # person class id 
-            data_list.append([class_names[classid[0]], box[2], (box[0], box[1]-2)])
+            data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
         elif classid ==67:
-            data_list.append([class_names[classid[0]], box[2], (box[0], box[1]-2)])
+            data_list.append([class_names[classid], box[2], (box[0], box[1]-2)])
         # if you want inclulde more classes then you have to simply add more [elif] statements here
         # returning list containing the object data. 
     return data_list
@@ -66,8 +66,8 @@ def distance_finder(focal_length, real_object_width, width_in_frmae):
     return distance
 
 # reading the reference image from dir 
-ref_person = cv.imread('ReferenceImages/image14.png')
-ref_mobile = cv.imread('ReferenceImages/image4.png')
+ref_person = cv.imread('FINAL-PROJECT-KB-F\ReferenceImages\image1.jpg')
+ref_mobile = cv.imread('FINAL-PROJECT-KB-F\ReferenceImages\image2.jpg')
 
 mobile_data = object_detector(ref_mobile)
 mobile_width_in_rf = mobile_data[1][1]
@@ -94,7 +94,7 @@ while True:
             distance = distance_finder (focal_mobile, MOBILE_WIDTH, d[1])
             x, y = d[2]
         cv.rectangle(frame, (x, y-3), (x+150, y+23),BLACK,-1 )
-        cv.putText(frame, f'Dis: {round(distance,2)} inch', (x+5,y+13), FONTS, 0.48, GREEN, 2)
+        cv.putText(frame, f'Distance: {round(distance,2)} metres', (x+5,y+13), FONTS, 0.48, PINK, 2)
 
     cv.imshow('frame',frame)
     
@@ -103,4 +103,3 @@ while True:
         break
 cv.destroyAllWindows()
 cap.release()
-
